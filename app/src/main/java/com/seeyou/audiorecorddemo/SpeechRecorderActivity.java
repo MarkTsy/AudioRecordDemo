@@ -29,7 +29,6 @@ import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
-import com.manna.audio.LameEncode;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -130,7 +129,7 @@ public class SpeechRecorderActivity extends Activity {
         int index = -1;
         for (int i = 0; i < utterances.length; i++) {
 
-            File u = new File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), utterances[i].toLowerCase().replace(' ', '_') + ".wav");
+            File u = new File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), DateUtil.Companion.getDate() + ".wav");
             if (!u.exists()) {
                 mUtterance = u;
                 index = i;
@@ -150,9 +149,7 @@ public class SpeechRecorderActivity extends Activity {
         final String status = "item " + (index + 1) + "/" + utterances.length;
 
         // start the microphone
-        mSampleRate = m8KHz.isChecked()? 8000 :
-                m11KHz.isChecked() ? 11025 :
-                11025;
+        mSampleRate = m8KHz.isChecked()? 8000 : m11KHz.isChecked() ? 11025 : 11025;
         mBaos = new ByteArrayOutputStream(mSampleRate * 2 * 20);
         try {
             mMicrophone = new MicrophoneInputStream(mSampleRate);
