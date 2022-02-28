@@ -32,6 +32,15 @@ public class PCMEncoderAAC {
         init(sampleRate);
     }
 
+    public PCMEncoderAAC(int sampleRate) {
+        init(sampleRate);
+    }
+
+    public void setEncoderListener(EncoderListener listener) {
+        this.encoderListener = listener;
+    }
+
+
     /**
      * 初始化AAC编码器
      */

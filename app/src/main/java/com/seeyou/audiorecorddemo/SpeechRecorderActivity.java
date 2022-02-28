@@ -66,6 +66,8 @@ public class SpeechRecorderActivity extends Activity {
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
 
+
+
         checkPermission();
         mHandler = new Handler();
 
@@ -110,7 +112,11 @@ public class SpeechRecorderActivity extends Activity {
         mCall.setChecked(true);
     }
 
+
+    PCMEncoderAAC pcmEncoderAAC;
     private void setupRecording() {
+
+
         Log.d(TAG, "setupRecording");
         // disable buttons
         mRedo.setEnabled(false);
@@ -150,6 +156,11 @@ public class SpeechRecorderActivity extends Activity {
 
         // start the microphone
         mSampleRate = m8KHz.isChecked()? 8000 : m11KHz.isChecked() ? 11025 : 11025;
+
+
+        pcmEncoderAAC = new PCMEncoderAAC(mSampleRate);
+
+
         mBaos = new ByteArrayOutputStream(mSampleRate * 2 * 20);
         try {
             mMicrophone = new MicrophoneInputStream(mSampleRate);
@@ -217,7 +228,6 @@ public class SpeechRecorderActivity extends Activity {
                 byte[] pcm = mBaos.toByteArray();
                 Log.d(TAG, "byteArray length " + pcm.length);
                 WaveHeader hdr = new WaveHeader(WaveHeader.FORMAT_PCM, (short)1, mSampleRate, (short)16, pcm.length);
-
                 hdr.write(out);
                 out.write(pcm);
             } finally {
