@@ -224,12 +224,17 @@ public class SpeechRecorderActivity extends Activity {
         try {
             OutputStream out = new FileOutputStream(mUtterance.toString());
 
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
             try {
                 byte[] pcm = mBaos.toByteArray();
-                Log.d(TAG, "byteArray length " + pcm.length);
+                Log.d(TAG, "source length " + pcm.length);
                 WaveHeader hdr = new WaveHeader(WaveHeader.FORMAT_PCM, (short)1, mSampleRate, (short)16, pcm.length);
-                hdr.write(out);
-                out.write(pcm);
+                hdr.write(baos);
+                baos.write(pcm);
+
+                Log.d(TAG, "pcm length " + baos.toByteArray());
+                out.write(baos.toByteArray());
             } finally {
                 out.close();
                 mMicrophone.close();
