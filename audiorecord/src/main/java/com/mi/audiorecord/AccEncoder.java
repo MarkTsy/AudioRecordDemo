@@ -86,52 +86,58 @@ public class AccEncoder implements Encoder {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        //获取可用的inputBuffer -1代表一直等待，0表示不等待 建议-1,避免丢帧
-        inputIndex = mediaEncode.dequeueInputBuffer(-1);
+        try {
+            //获取可用的inputBuffer -1代表一直等待，0表示不等待 建议-1,避免丢帧
+            inputIndex = mediaEncode.dequeueInputBuffer(-1);
 
-        if (inputIndex >= 0) {
-            inputBuffer = encodeInputBuffers[inputIndex];
-            inputBuffer.clear();
-            inputBuffer.limit(pcmData.length);
-            inputBuffer.put(pcmData);
+            if (inputIndex >= 0) {
+                inputBuffer = encodeInputBuffers[inputIndex];
+                inputBuffer.clear();
+                inputBuffer.limit(pcmData.length);
+                inputBuffer.put(pcmData);
 
-            mediaEncode.queueInputBuffer(inputIndex, 0, pcmData.length, 0, 0);
+                mediaEncode.queueInputBuffer(inputIndex, 0, pcmData.length, 0, 0);
+            }
+
+            //获取可用的outputBuffer
+            outputIndex = mediaEncode.dequeueOutputBuffer(encodeBufferInfo, 0);
+
+            Log.e("index", "outputIndex : " + outputIndex);
+
+            while (outputIndex >= 0) {
+                outBitSize = encodeBufferInfo.size;  //数据量
+                outPacketSize = outBitSize + 7;     //数据量 + 头
+                outputBuffer = encodeOutputBuffers[outputIndex];  //获取outputbuffer
+
+                outputBuffer.position(encodeBufferInfo.offset);  //定位数据开始位置
+                outputBuffer.limit(encodeBufferInfo.offset + outBitSize);  //显示数据长度
+
+                //添加ADTS头
+                byte[] outData = new byte[outPacketSize];   //保存数据数组
+                addADTStoPacket(outData, outPacketSize);  //添加头
+
+
+                outputBuffer.get(outData, 7, outBitSize);  //将编码得到的acc 放到数组中
+                outputBuffer.position(encodeBufferInfo.offset);   //定位到数据开始位置
+
+                baos.write(outData); //数据写入流中
+
+                mediaEncode.releaseOutputBuffer(outputIndex, false); //重置
+                outputIndex = mediaEncode.dequeueOutputBuffer(encodeBufferInfo, 0); //接着获取可用outputBuffer 确保所有buffer都被消耗重置
+            }
+
+            byte[] out = baos.toByteArray();
+
+            baos.flush();
+            baos.reset();
+
+            return out;
+
+        } finally {
+            baos.close();
+            mediaEncode.stop();
+            mediaEncode.release();
         }
-
-        //获取可用的outputBuffer
-        outputIndex = mediaEncode.dequeueOutputBuffer(encodeBufferInfo, 0);
-
-        Log.e("index", "outputIndex : " + outputIndex);
-
-        while (outputIndex >= 0) {
-            outBitSize = encodeBufferInfo.size;  //数据量
-            outPacketSize = outBitSize + 7;     //数据量 + 头
-            outputBuffer = encodeOutputBuffers[outputIndex];  //获取outputbuffer
-
-            outputBuffer.position(encodeBufferInfo.offset);  //定位数据开始位置
-            outputBuffer.limit(encodeBufferInfo.offset + outBitSize);  //显示数据长度
-
-            //添加ADTS头
-            byte[] outData = new byte[outPacketSize];   //保存数据数组
-            addADTStoPacket(outData, outPacketSize);  //添加头
-
-
-            outputBuffer.get(outData, 7, outBitSize);  //将编码得到的acc 放到数组中
-            outputBuffer.position(encodeBufferInfo.offset);   //定位到数据开始位置
-
-            baos.write(outData); //数据写入流中
-
-            mediaEncode.releaseOutputBuffer(outputIndex, false); //重置
-            outputIndex = mediaEncode.dequeueOutputBuffer(encodeBufferInfo, 0); //接着获取可用outputBuffer 确保所有buffer都被消耗重置
-        }
-
-        byte[] out = baos.toByteArray();
-
-        baos.flush();
-        baos.reset();
-        baos.close();
-
-        return out;
     }
 
     /**
