@@ -157,10 +157,6 @@ public class SpeechRecorderActivity extends Activity {
         // start the microphone
         mSampleRate = m8KHz.isChecked()? 8000 : m11KHz.isChecked() ? 11025 : 11025;
 
-
-        pcmEncoderAAC = new PCMEncoderAAC(mSampleRate);
-
-
         mBaos = new ByteArrayOutputStream(mSampleRate * 2 * 20);
         try {
             mMicrophone = new MicrophoneInputStream(mSampleRate);
@@ -434,8 +430,7 @@ public class SpeechRecorderActivity extends Activity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case PERMISSION_REQUEST_CODE:
                 if (grantResults.length > 0 &&

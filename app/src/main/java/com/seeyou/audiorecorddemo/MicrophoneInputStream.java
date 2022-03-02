@@ -45,6 +45,7 @@ public final class MicrophoneInputStream extends InputStream {
         mRecording = false;
     }
 
+
     private AudioRecord createAudioRecord() throws IOException {
         AudioRecord ar = new AudioRecord(VOICE_RECOGNITION, mSampleRate, CHANNEL_IN_MONO, ENCODING_PCM_16BIT, mBufferSize);
 
