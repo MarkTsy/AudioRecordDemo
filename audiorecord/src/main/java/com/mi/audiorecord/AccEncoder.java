@@ -26,7 +26,6 @@ public class AccEncoder implements Encoder {
 
     private int sampleRate;
     private int channelCount;
-    private int audioFormat;
     private MediaCodec mediaEncode;
     private ByteBuffer[] encodeInputBuffers;
     private ByteBuffer[] encodeOutputBuffers;
@@ -34,10 +33,9 @@ public class AccEncoder implements Encoder {
 
     private byte[] chunkAudio = new byte[0];
 
-    public AccEncoder(int sampleRate, int channelCount, int audioFormat) {
+    public AccEncoder(int sampleRate, int channelCount) {
         this.sampleRate = sampleRate;
         this.channelCount = channelCount;
-        this.audioFormat = audioFormat;
         initAACMediaEncode();
     }
 
