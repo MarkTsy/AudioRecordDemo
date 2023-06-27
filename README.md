@@ -1,3 +1,3 @@
 # AudioRecordDemo
 
-AudioRecord 录音 Demo
+Android端录音Demo 基于AudioRecord。
